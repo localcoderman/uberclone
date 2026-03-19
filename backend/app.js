@@ -5,6 +5,7 @@ const app = express();
 const cors = require('cors');
 const connectDB = require('./src/db/db.connection');
 connectDB();
+const userRoutes = require("./src/routes/user.route")
 
 
 
@@ -13,6 +14,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
+
+//Routes 
+
+
+app.use('/api/users',userRoutes)
 
 
 exports.app = app;
