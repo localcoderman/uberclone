@@ -88,3 +88,97 @@ curl -X POST http://localhost:3000/api/users/register \
   -d "{\"fullname\":{\"firstname\":\"Abdullah\",\"lastname\":\"Khan\"},\"email\":\"abdullah@example.com\",\"password\":\"secret123\"}"
 ```
 
+---
+
+## `POST /api/users/login` (loginUser)
+
+Logs in an existing user and returns an auth token.
+
+### Request
+
+- **Method**: `POST`
+- **URL**: `/api/users/login`
+- **Headers**
+  - **Content-Type**: `application/json`
+
+#### Body (JSON)
+
+```json
+{
+  "email": "abdullah@example.com",
+  "password": "secret123"
+}
+```
+
+#### Field requirements
+
+- **email** (string, required): must be a valid email
+- **password** (string, required): minimum length **6**
+
+### Responses
+
+#### `201 Created`
+
+Returned when the email/password is valid.
+
+```json
+{
+  "finalCall": {
+    "_id": "…",
+    "fullname": { "firstname": "Abdullah", "lastname": "Khan" },
+    "email": "abdullah@example.com",
+    "socketid": null,
+    "createdAt": "…",
+    "updatedAt": "…",
+    "__v": 0
+  },
+  "token": "…"
+}
+```
+
+Notes:
+- `token` is a JWT signed with `process.env.TOKEN_SECRET` and expires in **24h**.
+
+#### `400 Bad Request`
+
+Returned when validation fails (from `express-validator` in the route).
+
+```json
+{
+  "errors": [
+    {
+      "type": "field",
+      "msg": "Email is required",
+      "path": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+#### `401 Unauthorized`
+
+Returned when the account doesn't exist or password is wrong.
+
+```json
+{
+  "Message": "Invalid Email or Password"
+}
+```
+
+Or:
+
+```json
+{
+  "Message": "Incorrect Password"
+}
+```
+
+### Example cURL
+
+```bash
+curl -X POST http://localhost:3000/api/users/login \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"abdullah@example.com\",\"password\":\"secret123\"}"
+```
+
