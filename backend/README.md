@@ -182,3 +182,121 @@ curl -X POST http://localhost:3000/api/users/login \
   -d "{\"email\":\"abdullah@example.com\",\"password\":\"secret123\"}"
 ```
 
+---
+
+## `GET /api/users/profile` (getUserProfile)
+
+Returns the authenticated user document. Requires a valid JWT that is not blacklisted.
+
+### Request
+
+- **Method**: `GET`
+- **URL**: `/api/users/profile`
+- **Headers** (use one of the following)
+  - **Cookie**: `token=<JWT>` (set automatically after login if your client uses cookies)
+  - **Authorization**: `Bearer <JWT>`
+
+No request body.
+
+### Responses
+
+#### `201 Created`
+
+Returned when the token is valid and the user exists. Body is the user document (same shape as in register/login responses).
+
+```json
+{
+  "_id": "…",
+  "fullname": { "firstname": "Abdullah", "lastname": "Khan" },
+  "email": "abdullah@example.com",
+  "socketid": null,
+  "createdAt": "…",
+  "updatedAt": "…",
+  "__v": 0
+}
+```
+
+#### `401 Unauthorized`
+
+Returned when:
+
+- No token is provided
+- The token is on the blacklist (e.g. after logout)
+- The token is invalid or expired
+- The user id in the token no longer exists in the database
+
+Example shapes:
+
+```json
+{
+  "message": "Unauthorization"
+}
+```
+
+```json
+{
+  "message": "Unauthorization Access"
+}
+```
+
+```json
+{
+  "message": "Unauthorized Access"
+}
+```
+
+### Example cURL
+
+```bash
+# With Bearer token
+curl -X GET http://localhost:3000/api/users/profile \
+  -H "Authorization: Bearer <your-jwt>"
+
+# With cookie (after login set cookie on the same host)
+curl -X GET http://localhost:3000/api/users/profile \
+  -H "Cookie: token=<your-jwt>"
+```
+
+---
+
+## `GET /api/users/logout` (userLogout)
+
+Invalidates the current session JWT by adding it to a blacklist, clears the `token` cookie, and confirms logout.
+
+### Request
+
+- **Method**: `GET`
+- **URL**: `/api/users/logout`
+- **Headers** (same as profile)
+  - **Cookie**: `token=<JWT>`
+  - **Authorization**: `Bearer <JWT>`
+
+No request body.
+
+### Responses
+
+#### `201 Created`
+
+Returned when logout succeeds.
+
+```json
+{
+  "message": "successfully LogOut"
+}
+```
+
+#### `401 Unauthorized`
+
+Same conditions as `GET /api/users/profile` (missing, invalid, expired, or blacklisted token).
+
+### Example cURL
+
+```bash
+curl -X GET http://localhost:3000/api/users/logout \
+  -H "Authorization: Bearer <your-jwt>"
+```
+
+Notes:
+
+- After logout, the same JWT must not be reused; `authMiddleware` rejects blacklisted tokens.
+
