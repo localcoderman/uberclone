@@ -420,3 +420,146 @@ curl -X POST http://localhost:3000/api/captains/register \
   -d "{\"fullname\":{\"firstname\":\"Abdullah\",\"lastname\":\"Khan\"},\"email\":\"captain@example.com\",\"password\":\"secret123\",\"vehicle\":{\"color\":\"Black\",\"plate\":\"ABC1234\",\"capacity\":4,\"vehicleType\":\"car\"}}"
 ```
 
+---
+## `POST /api/captains/login` (captainLogin)
+
+Authenticates a captain using `email` + `password`. On success it sets a `token` cookie (JWT) and returns the captain data (with `password` removed) plus the JWT.
+
+### Request
+
+- **Method**: `POST`
+- **URL**: `/api/captains/login`
+- **Headers**
+  - `Content-Type: application/json`
+
+#### Body (JSON)
+
+```json
+{
+  "email": "captain@example.com",
+  "password": "secret123"
+}
+```
+
+### Responses
+
+#### `201 Created` (success)
+
+On success the controller:
+- sets a cookie `token=<JWT>`
+- returns `isEmailobj` (captain without `password`) and `token`
+
+```json
+{
+  "isEmailobj": {
+    "_id": "…",
+    "fullname": { "firstname": "Abdullah", "lastname": "Khan" },
+    "email": "captain@example.com",
+    "vehicle": { "color": "Black", "plate": "ABC1234", "capacity": 4, "vehicleType": "car" },
+    "status": "inActive",
+    "socketId": null,
+    "createdAt": "…",
+    "updatedAt": "…",
+    "__v": 0
+  },
+  "token": "…"
+}
+```
+
+#### `401 Unauthorized` (validation errors)
+
+If `express-validator` fails for `email` or `password`, it returns:
+
+```json
+{
+  "error": [
+    {
+      "type": "field",
+      "msg": "Invalid Email",
+      "path": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+#### `401 Unauthorized` (missing fields)
+
+```json
+{
+  "Message": "All Fields are Required"
+}
+```
+
+#### `401 Unauthorized` (unknown email / wrong password)
+
+Unknown email:
+```json
+{ "errorMessage": "something went wrong (Email)" }
+```
+
+Wrong password:
+```json
+{ "errorMessage": "something went wrong (pass)" }
+```
+
+Notes:
+- On wrong password the controller clears the `token` cookie using `res.clearCookie("token")`.
+- JWT is signed with `process.env.TOKEN_SECRET` and expires in `24h` (payload includes `_id`).
+
+### Example cURL
+
+```bash
+curl -X POST http://localhost:3000/api/captains/login \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"captain@example.com\",\"password\":\"secret123\"}"
+```
+
+---
+## `GET /api/captains/logout` (captainLogout)
+
+Logs the captain out by blacklisting the current JWT, clearing the `token` cookie, and confirming logout. This endpoint is protected by `captainAuth`.
+
+### Request
+
+- **Method**: `GET`
+- **URL**: `/api/captains/logout`
+- **Headers** (same token sources as login/profile auth)
+  - `Cookie: token=<JWT>` OR
+  - `Authorization: Bearer <JWT>`
+
+No request body.
+
+### Responses
+
+#### `201 Created` (success)
+
+```json
+{
+  "Message": "Captain LogOut Successfully"
+}
+```
+
+#### `401 Unauthorized`
+
+Returned when:
+- the token is missing
+- the token is blacklisted (logout previously called)
+- JWT verification fails
+
+### Example cURL
+
+With bearer token:
+```bash
+curl -X GET http://localhost:3000/api/captains/logout \
+  -H "Authorization: Bearer <your-jwt>"
+```
+
+With cookie:
+```bash
+curl -X GET http://localhost:3000/api/captains/logout \
+  -H "Cookie: token=<your-jwt>"
+```
+
+Notes:
+- The token blacklist is stored in `blacklist` with a TTL of `24h` (`expires: 86400`).

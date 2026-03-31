@@ -1,102 +1,101 @@
-const mongoose = require('mongoose')
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
-const captainSchema = new mongoose.Schema({
-    fullname:{
-        firstname:{
-            type:String,
-            required:true,
-            minlength:[3,'First Name must be at least 3 character']
-        },
-        lastname:{
-            type:String,
-            minlength:[3,'First Name must be at least 3 character']
-        }
-
-        },
-    email:{
-        type: String,
-        unique: true,
-        required: true,
-        match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "please Enter a valid Email"],
-        lowercase: true, 
-
-    },
-    password:{
+const captainSchema = new mongoose.Schema(
+  {
+    fullname: {
+      firstname: {
         type: String,
         required: true,
-        select: false
-    },
-
-    socketId:{
-        type:String,
-    },
-    status:{
+        minlength: [3, "First Name must be at least 3 character"],
+      },
+      lastname: {
         type: String,
-        enum: ['active', 'inActive'],
-        default: 'inActive'
+        minlength: [3, "First Name must be at least 3 character"],
+      },
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+      match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "please Enter a valid Email"],
+      lowercase: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      select: false,
     },
 
-    vehicle:{
-            color:{
-                type:String,
-                required: true,
-                minlength:[3, "color must be at least 3 character long"]
-            },
-            plate:{
-                type:String,
-                required: true,
-                minlength:[3, "color must be at least 3 character long"]
-    
-            },
-            capacity:{
-                type:Number,
-                required: true,
-            },
-            vehicleType :{
-                type: String,
-                required: true,
-                enum:["car", 'autoRiksha','motorcycle'],
-            }
-        },
+    socketId: {
+      type: String,
+    },
+    status: {
+      type: String,
+      enum: ["active", "inActive"],
+      default: "inActive",
+    },
 
-    location:{
+    vehicle: {
+      color: {
+        type: String,
+        required: true,
+        minlength: [3, "color must be at least 3 character long"],
+      },
+      plate: {
+        type: String,
+        required: true,
+        minlength: [3, "color must be at least 3 character long"],
+      },
+      capacity: {
+        type: Number,
+        required: true,
+      },
+      vehicleType: {
+        type: String,
+        required: true,
+        enum: ["car", "autoRiksha", "motorcycle"],
+      },
+    },
 
-        latitude:{
-            type:Number
-        },
-        
-        longitute:{
-            type:Number
-        }
-    }
-    
-},{timestamps:true})
+    location: {
+      latitude: {
+        type: Number,
+      },
 
-captainSchema.methods.generateAuthToken = function(){
-const token = jwt.sign({
-    _id : this._id
-},
+      longitute: {
+        type: Number,
+      },
+    },
+  },
+  { timestamps: true },
+);
 
-process.env.TOKEN_SECRET,
+captainSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign(
+    {
+      _id: this._id,
+    },
 
-{
-    expiresIn:'24h'
-})
+    process.env.TOKEN_SECRET,
 
-return token
-}
+    {
+      expiresIn: "24h",
+    },
+  );
 
-captainSchema.methods.comparePassword = function(password){
-bcrypt.compare(password,this.password)
-}
+  return token;
+};
 
-captainSchema.statics.hashPassword = async function(password){
-const hash = await bcrypt.hash(password,10)
-return hash
-}
+captainSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+}; 
 
-const captainModel = mongoose.model("captain",captainSchema)
-module.exports = captainModel
+captainSchema.statics.hashPassword = async function (password) {
+  const hash = await bcrypt.hash(password, 10);
+  return hash;
+};
 
+const captainModel = mongoose.model("captain", captainSchema);
+module.exports = captainModel;
