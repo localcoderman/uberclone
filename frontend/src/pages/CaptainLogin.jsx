@@ -27,7 +27,7 @@ const CaptainLogin = () => {
   return (
     <div className="p-7 h-screen flex flex-col justify-between ">
       <div>
-        <Link to='/'><img className="w-18 mb-8  object-cover" src="captainlogo.jpg" alt="" /></Link>
+        <Link to='/'><img className="w-15 mb-4  object-cover" src="captainlogo.jpg" alt="" /></Link>
       <form className="flex flex-col" onSubmit={formSubmit}>
 
         <h3 className="text-lg font-medium mb-2">What's Your Email?</h3>
