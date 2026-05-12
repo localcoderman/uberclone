@@ -11,7 +11,7 @@ const UserSignup = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     setuserData({
-      username: {
+      fullname: {
         firstname: firstname,
         lastname: lastname,
       },

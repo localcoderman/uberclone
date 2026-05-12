@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 
 
+
 const CaptainSignup = () => {
 
    const [firstname, setfirstname] = useState("");
@@ -11,13 +12,32 @@ const CaptainSignup = () => {
     const [password, setpassword] = useState("");
     const [userData, setuserData] = useState({});
 
+      const submitHandler = (e) => {
+    e.preventDefault();
+    setuserData({
+      fullname: {
+        firstname: firstname,
+        lastname: lastname,
+      },
+      email: email,
+      password: password,
+    });
+
+    console.log(userData);
+
+    setfirstname("");
+    setlastname("");
+    setemail("");
+    setpassword("");
+  };
+
   return (
     <div>
       <div className="p-7 h-screen flex flex-col justify-between ">
         <div>
           <Link to='/'><img className="w-15 mb-4 ml-1 object-cover" src="captainlogo.jpg" alt="" /></Link>
-          <form className="flex flex-col" >
-            <h3 className="text-lg font-medium mb-2">What's Your Name</h3>
+          <form className="flex flex-col" onSubmit={submitHandler} >
+            <h3 className="text-lg font-medium mb-2">What's Our Captain Name</h3>
             <div className="flex gap-2 mb-5">
               <input
                 value={firstname}
@@ -40,7 +60,7 @@ const CaptainSignup = () => {
                 placeholder="Second Name"
               />
             </div>
-            <h3 className="text-lg font-medium mb-2">What's Your Email</h3>
+            <h3 className="text-lg font-medium mb-2">What's Our Captain Email</h3>
             <input
               value={email}
               onChange={(e) => {
