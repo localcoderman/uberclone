@@ -10,9 +10,9 @@ module.exports.registerUser = async (req, res) => {
   }
   const { fullname, email, password } = req.body;
 
-  const isUserExist = userModel.findOne({email})
+  const isUserExist = await userModel.findOne({email})
 if(isUserExist){
-    res.status(401).json({
+    return res.status(401).json({
         message : "User Already Exist"
     })
 }
@@ -25,7 +25,7 @@ if(isUserExist){
     password: hashedPassword,
   });
   const token = user.generateAuthToken();
-  res.status(201).json({ message: "User created successfully", user, token });
+  return res.status(201).json({ message: "User created successfully", user, token });
 };
 
 module.exports.loginUser = async (req, res) => {

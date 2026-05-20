@@ -1,25 +1,43 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link ,useNavigate } from "react-router-dom";
+import axios from 'axios'
+import {UserDataContext} from "../context/UserContext";
+
 
 const UserSignup = () => {
   const [firstname, setfirstname] = useState("");
   const [lastname, setlastname] = useState("");
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
-  const [userData, setuserData] = useState({});
+  const [userData, setuserData] = useState('');
+  const navigate = useNavigate()
 
-  const submitHandler = (e) => {
+
+  const {user,setuser}= useContext (UserDataContext)
+
+
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setuserData({
+    
+    const newUser =   {
       fullname: {
         firstname: firstname,
         lastname: lastname,
       },
       email: email,
       password: password,
-    });
+    };
 
-    console.log(userData);
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/users/register`, newUser)
+
+    if(response.status===201){
+      const data = response.data
+      setuser(data.user)
+      navigate('/')
+
+    }
+    
 
     setfirstname("");
     setlastname("");
@@ -57,7 +75,6 @@ const UserSignup = () => {
                 }}
                 className="text-lg bg-[#eeeeee] w-1/2  rounded  px-3 py-2 border placeholder:text-base"
                 type="text"
-                required
                 placeholder="Second Name"
               />
             </div>
