@@ -34,7 +34,8 @@ const UserSignup = () => {
     if(response.status===201){
       const data = response.data
       setuser(data.user)
-      navigate('/')
+      localStorage.setItem('token',data.token)
+      navigate('/home')
 
     }
     
@@ -75,6 +76,7 @@ const UserSignup = () => {
                 }}
                 className="text-lg bg-[#eeeeee] w-1/2  rounded  px-3 py-2 border placeholder:text-base"
                 type="text"
+                required
                 placeholder="Second Name"
               />
             </div>

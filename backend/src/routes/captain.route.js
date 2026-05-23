@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const {body} = require('express-validator')
-const {captainRegister,captainLogin,captainLogout,captainProfile} = require("../controllers/captain.controller")
+const {captainRegister,captainLogin,captainLogout,captainProfile} = require("../controllers/captain.controller.js")
 const {captainAuth} = require("../middlewares/auth.middleware")
 
 

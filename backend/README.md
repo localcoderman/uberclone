@@ -516,6 +516,56 @@ curl -X POST http://localhost:3000/api/captains/login \
 ```
 
 ---
+## `GET /api/captains/profile` (captainProfile)
+
+Returns the authenticated captain document. Requires a valid JWT that is not blacklisted.
+
+### Request
+
+- **Method**: `GET`
+- **URL**: `/api/captains/profile`
+- **Headers** (use one of the following)
+  - `Cookie: token=<JWT>`
+  - `Authorization: Bearer <JWT>`
+
+No request body.
+
+### Responses
+
+#### `201 Created`
+
+Returned when the token is valid and the captain exists.
+
+```json
+{
+  "_id": "…",
+  "fullname": { "firstname": "Abdullah", "lastname": "Khan" },
+  "email": "captain@example.com",
+  "vehicle": { "color": "Black", "plate": "ABC1234", "capacity": 4, "vehicleType": "car" },
+  "status": "inActive",
+  "socketId": null,
+  "createdAt": "…",
+  "updatedAt": "…",
+  "__v": 0
+}
+```
+
+#### `401 Unauthorized`
+
+Returned when:
+- no token is provided
+- the token is blacklisted
+- the token is invalid or expired
+- the captain id in the token no longer exists
+
+### Example cURL
+
+```bash
+curl -X GET http://localhost:3000/api/captains/profile \
+  -H "Authorization: Bearer <your-jwt>"
+```
+
+---
 ## `GET /api/captains/logout` (captainLogout)
 
 Logs the captain out by blacklisting the current JWT, clearing the `token` cookie, and confirming logout. This endpoint is protected by `captainAuth`.

@@ -54,11 +54,15 @@ module.exports.loginUser = async (req, res) => {
 
   const finalCall = await userModel.findOne({ email });
 
-  res.status(201).json({
+ res.status(201).json({
     finalCall,
     token,
   });
 };
+
+
+
+
 
 module.exports.getUserProfile = async (req, res) => {
   res.status(201).json(req.user);

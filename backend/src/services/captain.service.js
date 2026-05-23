@@ -22,7 +22,7 @@ module.exports.createCaptain = async ({
     throw new Error("All Fields are Required");
   }
 
-  const captain = captainModel.create({
+  const captain = await  captainModel.create({
     fullname: {
       firstname,
       lastname,
