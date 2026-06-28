@@ -27,8 +27,6 @@ useEffect(()=>{
 }).then((response)=>{
     if(response.status === 201){
         const data = response.data
-        console.log(data);
-        
         setuser(data)
         setisLoading(false)
     }
